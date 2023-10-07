@@ -282,15 +282,19 @@ TLI493D_Status TLI493D_SetConfigurationAndTrigger(TLI493D_Device* dev, TLI493D_C
 
 	// WU
 	buff[7] =
-		TLI493D_SET_FIELD(TLI493D_WU_XH_FIELD, ((config->wakeupThresholdXHigh & 0xF) >> 1)) | TLI493D_SET_FIELD(TLI493D_WU_XL_FIELD, ((config->wakeupThresholdXLow & 0xF) >> 1));
+		TLI493D_SET_FIELD(TLI493D_WU_WU_FIELD, config->enableWakeup) |
+		TLI493D_SET_FIELD(TLI493D_WU_XH_FIELD, ((config->wakeupThresholdXHigh & 0xF) >> 1)) |
+		TLI493D_SET_FIELD(TLI493D_WU_XL_FIELD, ((config->wakeupThresholdXLow & 0xF) >> 1));
 
 	// YHL2
 	buff[8] =
-		TLI493D_SET_FIELD(TLI493D_YHL2_YH_FIELD, ((config->wakeupThresholdYHigh & 0xF) >> 1)) | TLI493D_SET_FIELD(TLI493D_YHL2_YL_FIELD, ((config->wakeupThresholdYLow & 0xF) >> 1));
+		TLI493D_SET_FIELD(TLI493D_YHL2_YH_FIELD, ((config->wakeupThresholdYHigh & 0xF) >> 1)) | 
+		TLI493D_SET_FIELD(TLI493D_YHL2_YL_FIELD, ((config->wakeupThresholdYLow & 0xF) >> 1));
 
 	// ZHL2
 	buff[9] =
-		TLI493D_SET_FIELD(TLI493D_ZHL2_ZH_FIELD, ((config->wakeupThresholdZHigh & 0xF) >> 1)) | TLI493D_SET_FIELD(TLI493D_ZHL2_ZL_FIELD, ((config->wakeupThresholdZLow & 0xF) >> 1));
+		TLI493D_SET_FIELD(TLI493D_ZHL2_ZH_FIELD, ((config->wakeupThresholdZHigh & 0xF) >> 1)) | 
+		TLI493D_SET_FIELD(TLI493D_ZHL2_ZL_FIELD, ((config->wakeupThresholdZLow & 0xF) >> 1));
 
 	// CONFIG
 	uint8_t dt;
