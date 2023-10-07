@@ -423,19 +423,27 @@ TLI493D_Status TLI493D_GetDataAndTrigger(TLI493D_Device* dev, float* x, float* y
 	if (dev->actualSensitivity == TLI493D_Sensitivity_X1) {
 		*x = (float)xi / 7.7;
 		*y = (float)yi / 7.7;
-		*z = (float)zi / 7.7;
+		if (z) {
+			*z = (float)zi / 7.7;
+		}
 	} else if (dev->actualSensitivity == TLI493D_Sensitivity_X2) {
 		*x = (float)xi / 15.4;
 		*y = (float)yi / 15.4;
-		*z = (float)zi / 15.4;
+		if (z) {
+			*z = (float)zi / 15.4;
+		}
 	} else if (dev->actualSensitivity == TLI493D_Sensitivity_X4) {
 		*x = (float)xi / 30.8;
 		*y = (float)yi / 30.8;
-		*z = (float)zi / 30.8;
+		if (z) {
+			*z = (float)zi / 30.8;
+		}
 	} else {
 		return TLI493D_Status_InvalidOperation;
 	}
-	*temperature = (xi - 1180) * 0.24 + 25;
+	if (temperature) {
+		*temperature = (xi - 1180) * 0.24 + 25;
+	}
 
 	return TLI493D_Status_Ok;
 }
@@ -465,14 +473,18 @@ TLI493D_Status TLI493D_GetDataRawAndTrigger(TLI493D_Device* dev, int16_t* x, int
 
 	uint16_t ux = (((uint16_t)(regs[TLI493D_REG_BX])) << 4) | TLI493D_GET_FIELD(TLI493D_BX2_BX_FIELD, regs[TLI493D_REG_BX2]);
 	uint16_t uy = (((uint16_t)(regs[TLI493D_REG_BY])) << 4) | TLI493D_GET_FIELD(TLI493D_BX2_BY_FIELD, regs[TLI493D_REG_BX2]);
-	uint16_t uz = (((uint16_t)(regs[TLI493D_REG_BZ])) << 4) | TLI493D_GET_FIELD(TLI493D_TEMP2_BZ_FIELD, regs[TLI493D_REG_TEMP2]);
-	uint16_t ut = (((uint16_t)(regs[TLI493D_REG_TEMP])) << 4) | ((TLI493D_GET_FIELD(TLI493D_TEMP2_TEMP_FIELD, regs[TLI493D_REG_TEMP2])) << 2);
 
 	// sign extension + uint to int conversion
 	*x = ((int16_t)(ux << 4) >> 4);
 	*y = ((int16_t)(uy << 4) >> 4);
-	*z = ((int16_t)(uz << 4) >> 4);
-	*temperature = ((int16_t)(ut << 4) >> 4);
+	if (z) {
+		uint16_t uz = (((uint16_t)(regs[TLI493D_REG_BZ])) << 4) | TLI493D_GET_FIELD(TLI493D_TEMP2_BZ_FIELD, regs[TLI493D_REG_TEMP2]);
+		*z = ((int16_t)(uz << 4) >> 4);
+	}
+	if (temperature) {
+		uint16_t ut = (((uint16_t)(regs[TLI493D_REG_TEMP])) << 4) | ((TLI493D_GET_FIELD(TLI493D_TEMP2_TEMP_FIELD, regs[TLI493D_REG_TEMP2])) << 2);
+		*temperature = ((int16_t)(ut << 4) >> 4);
+	}
 
 	return TLI493D_Status_Ok;
 }
