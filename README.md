@@ -17,6 +17,7 @@ Following example configure sensor in default mode and in infinite loop it retri
 
 ```
 #include "TLI493D.h"
+#include <stdio.h>
 
 int main(void) {
 	TLI493D_Status tStatus;
@@ -42,6 +43,7 @@ Basicaly exmaples is almost same as in case in previous case. You need to alloca
 
 ```
 #include "TLI493D.h"
+#include <stdio.h>
 
 int main(void) {
 	TLI493D_Status tStatus;
@@ -67,3 +69,57 @@ int main(void) {
 }
 ```
 
+## Angle
+
+Following example prints angle of nearby magnetic field (in radians). You can use it for detecting position of magnet.
+
+```
+#include "TLI493D.h"
+#include <stdio.h>
+
+int main(void) {
+	TLI493D_Status tStatus;
+	TLI493D_Device tli;
+	TLI493D_Configuration config;
+
+	TLI493D_GetDefaultConfiguration(&config);
+	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// handle error code in tStatus
+
+	while (1) {
+		float angle;
+		tStatus = TLI493D_GetAngle(&tli, &angle);
+		// handle error code in tStatus
+
+		printf("Angle=%.3f\r\n", angle);
+	}
+}
+
+```
+
+## Proximity
+
+Following code use sensor for proximity detection with directional compensation. Basicaly it computes magnet's inverse distance from the sensor based. It should report the same distance no matter of angle relative to the sensor.
+
+```
+#include "TLI493D.h"
+#include <stdio.h>
+
+int main(void) {
+	TLI493D_Status tStatus;
+	TLI493D_Device tli;
+	TLI493D_Configuration config;
+
+	TLI493D_GetDefaultConfiguration(&config);
+	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// handle error code in tStatus
+
+	while (1) {
+		float proximity;
+		tStatus = TLI493D_GetProximity(&tli, &proximity);
+		// handle error code in tStatus
+
+		printf("Proximity=%.3f\r\n", proximity);
+	}
+}
+```

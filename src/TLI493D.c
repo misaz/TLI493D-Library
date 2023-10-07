@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 static int initializedDevices = 0;
 
@@ -394,6 +395,7 @@ TLI493D_Status TLI493D_SetConfigurationAndTrigger(TLI493D_Device* dev, TLI493D_C
 	}
 
 	dev->useOneByteProtocol = config->useOneByteProtocol;
+	dev->actualSensitivity = config->sensitivity;
 
 	return TLI493D_Status_Ok;
 }
@@ -479,7 +481,37 @@ TLI493D_Status TLI493D_GetAngle(TLI493D_Device* dev, float* angle) {
 	return TLI493D_GetAngleAndTrigger(dev, angle, TLI493D_TriggerMode_NoTrigger);
 }
 
-TLI493D_Status TLI493D_GetAngleAndTrigger(TLI493D_Device* dev, float* angle, TLI493D_TriggerMode triggerMode);
+TLI493D_Status TLI493D_GetAngleAndTrigger(TLI493D_Device* dev, float* angle, TLI493D_TriggerMode triggerMode) {
+	TLI493D_Status status;
+	float x, y, z, temp;
+
+	status = TLI493D_GetDataAndTrigger(dev, &x, &y, &z, &temp, triggerMode);
+	if (status) {
+		return status;
+	}
+
+	*angle = atan2f(y, x);
+
+	return TLI493D_Status_Ok;
+}
+
+TLI493D_Status TLI493D_GetProximity(TLI493D_Device* dev, float* proximity) {
+	return TLI493D_GetProximityAndTrigger(dev, proximity, TLI493D_TriggerMode_NoTrigger);
+}
+
+TLI493D_Status TLI493D_GetProximityAndTrigger(TLI493D_Device* dev, float* proximity, TLI493D_TriggerMode triggerMode) {
+	TLI493D_Status status;
+	float x, y, z, temp;
+
+	status = TLI493D_GetDataAndTrigger(dev, &x, &y, &z, &temp, triggerMode);
+	if (status) {
+		return status;
+	}
+
+	*proximity = sqrtf(x * x + y * y + z * z);
+
+	return TLI493D_Status_Ok;
+}
 
 TLI493D_Status TLI493D_TriggerConversion(TLI493D_Device* dev) {
 	uint8_t trigBits = 0x40;

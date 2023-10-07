@@ -298,5 +298,8 @@ TLI493D_Status TLI493D_GetDataRawAndTrigger(TLI493D_Device* dev, int16_t* x, int
 TLI493D_Status TLI493D_GetAngle(TLI493D_Device* dev, float* angle);
 TLI493D_Status TLI493D_GetAngleAndTrigger(TLI493D_Device* dev, float* angle, TLI493D_TriggerMode triggerMode);
 
+TLI493D_Status TLI493D_GetProximity(TLI493D_Device* dev, float* proximity);
+TLI493D_Status TLI493D_GetProximityAndTrigger(TLI493D_Device* dev, float* proximity, TLI493D_TriggerMode triggerMode);
+
 TLI493D_Status TLI493D_TriggerConversion(TLI493D_Device* dev);
 #endif
