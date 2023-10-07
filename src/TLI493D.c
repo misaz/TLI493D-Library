@@ -155,7 +155,7 @@ TLI493D_Status TLI493D_GetDefaultConfiguration(TLI493D_Configuration* config) {
 	} else {
 		config->useOneByteProtocol = 1;
 	}
-	config->useColisionAvoidance = 0;
+	config->enableColisionAvoidance = 0;
 	config->enableInterrupt = 0;
 	config->oneByteTriggerMode = TLI493D_TriggerMode_NoTrigger;
 	config->temperatureCompensationMode = TLI493D_TemperatureCompensation_TC0;
@@ -226,7 +226,7 @@ TLI493D_Status TLI493D_GetConfiguration(TLI493D_Device* dev, TLI493D_Configurati
 	config->wakeupThresholdZHigh = (((uint16_t)(regs[TLI493D_REG_ZH])) << 3) | TLI493D_GET_FIELD(TLI493D_ZHL2_ZH_FIELD, regs[TLI493D_REG_ZHL2]);
 
 	config->useOneByteProtocol = TLI493D_GET_FIELD(TLI493D_MOD1_PR_FIELD, regs[TLI493D_REG_MOD1]);
-	config->useColisionAvoidance = TLI493D_GET_FIELD(TLI493D_MOD1_CA_FIELD, regs[TLI493D_REG_MOD1]);
+	config->enableColisionAvoidance = TLI493D_GET_FIELD(TLI493D_MOD1_CA_FIELD, regs[TLI493D_REG_MOD1]);
 	config->enableInterrupt = TLI493D_GET_FIELD(TLI493D_MOD1_INT_FIELD, regs[TLI493D_REG_MOD1]);
 
 	uint8_t trig = TLI493D_GET_FIELD(TLI493D_CONFIG_TRIG_FIELD, regs[TLI493D_REG_CONFIG]);
@@ -358,7 +358,7 @@ TLI493D_Status TLI493D_SetConfigurationAndTrigger(TLI493D_Device* dev, TLI493D_C
 	buff[11] =
 		TLI493D_SET_FIELD(TLI493D_MOD1_IICADR_FIELD, iicAddr) |
 		TLI493D_SET_FIELD(TLI493D_MOD1_PR_FIELD, config->useOneByteProtocol) |
-		TLI493D_SET_FIELD(TLI493D_MOD1_CA_FIELD, config->useColisionAvoidance) |
+		TLI493D_SET_FIELD(TLI493D_MOD1_CA_FIELD, config->enableColisionAvoidance) |
 		TLI493D_SET_FIELD(TLI493D_MOD1_INT_FIELD, config->enableInterrupt) |
 		TLI493D_SET_FIELD(TLI493D_MOD1_MODE_FIELD, config->powerMode);
 

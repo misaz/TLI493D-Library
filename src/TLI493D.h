@@ -266,7 +266,7 @@ typedef struct  {
 	uint16_t wakeupThresholdZHigh;
 
 	int useOneByteProtocol;
-	int useColisionAvoidance;
+	int nebaleColisionAvoidance;
 	int enableInterrupt;
 	TLI493D_TriggerMode oneByteTriggerMode;
 	TLI493D_TemperatureCompensation temperatureCompensationMode;
