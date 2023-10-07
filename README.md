@@ -26,12 +26,12 @@ int main(void) {
 
 	TLI493D_GetDefaultConfiguration(&config);
 	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
 	while (1) {
 		float x, y, z, t;
 		tStatus = TLI493D_GetData(&tli, &x, &y, &z, &t);
-		// handle error code in tStatus
+		// TODO: handle error code in tStatus
 
 		printf("X=%.3f mT\t Y=%.3f mT\t Z=%.3f mT\t T=%.3f mT\r\n", x, y, z, t);
 	}
@@ -53,12 +53,12 @@ int main(void) {
 
 	TLI493D_GetDefaultConfiguration(&config);
 	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
 	while (1) {
 		int16_t x, y, z, t;
 		tStatus = TLI493D_GetDataRaw(&tli, &x, &y, &z, &t);
-		// handle error code in tStatus
+		// TODO: handle error code in tStatus
 
 		printf("X=%d\t Y=%d\t Z=%d\t T=%d\r\n", x, y, z, t);
 	}
@@ -81,16 +81,16 @@ int main(void) {
 	TLI493D_GetDefaultConfiguration(&config);
 	tStatus = TLI493D_Init(&tli1, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
 	tStatus = TLI493D_Init(&tli2, TLI493D_I2C_7BIT_ADDRESS_A1, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
 	while (1) {
 		int16_t x1, y1, z1, t1, x2, y2, z2, t2;
 
 		tStatus = TLI493D_GetDataRaw(&tli1, &x1, &y1, &z1, &t1);
-		// handle error code in tStatus
+		// TODO: handle error code in tStatus
 
-		tStatus = TLI493D_GetDataRaw(&tli1, &x1, &y1, &z1, &t1);
-		// handle error code in tStatus
+		tStatus = TLI493D_GetDataRaw(&tli2, &x2, &y2, &z2, &t2);
+		// TODO: handle error code in tStatus
 
 		printf("X1=%d\t Y1=%d\t Z1=%d\t T1=%d\tX2=%d\t Y2=%d\t Z2=%d\t T2=%d\r\n", x1, y1, z1, t1, x2, y2, z2, t2);
 	}
@@ -112,12 +112,12 @@ int main(void) {
 
 	TLI493D_GetDefaultConfiguration(&config);
 	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
 	while (1) {
 		float angle;
 		tStatus = TLI493D_GetAngle(&tli, &angle);
-		// handle error code in tStatus
+		// TODO: handle error code in tStatus
 
 		printf("Angle=%.3f\r\n", angle);
 	}
@@ -140,12 +140,12 @@ int main(void) {
 
 	TLI493D_GetDefaultConfiguration(&config);
 	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
 	while (1) {
 		float proximity;
 		tStatus = TLI493D_GetProximity(&tli, &proximity);
-		// handle error code in tStatus
+		// TODO: handle error code in tStatus
 
 		printf("Proximity=%.3f\r\n", proximity);
 	}
@@ -174,9 +174,9 @@ int main(void) {
 	config.updateRate = TLI493D_UpdateRate_3Hz;
 
 	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
-	// handle error code in tStatus
+	// TODO: handle error code in tStatus
 
-	// configure and enable GPIO falling edge interrupt here
+	// TODO: configure and enable GPIO falling edge interrupt here
 
 	while (1) {
 		if (is_interrupt_triggered) {
@@ -184,7 +184,7 @@ int main(void) {
 
 			float proximity;
 			tStatus = TLI493D_GetProximity(&tli, &proximity);
-			// handle error code in tStatus
+			// TODO: handle error code in tStatus
 
 			printf("Proximity=%.3f\r\n", proximity);
 		} else {
@@ -193,3 +193,83 @@ int main(void) {
 	}
 }
 ```
+## Wakeup
+
+```
+#include "TLI493D.h"
+
+#include <stdio.h>
+#include <stdint.h>
+
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+
+int is_interrupt_triggered = 0;
+
+void interrupt_handler() {
+	is_interrupt_triggered = 1;
+}
+
+TLI493D_Status updateMagneticThresholds(TLI493D_Device* dev) {
+	TLI493D_Status tStatus;
+	int16_t x, y, z;
+
+	tStatus = TLI493D_GetDataRaw(dev, &x, &y, &z, NULL);
+	if (tStatus) {
+		return tStatus;
+	}
+
+	TLI493D_Configuration config;
+	TLI493D_GetDefaultConfiguration(&config);
+	config.enableWakeup = 1;
+
+	config.wakeupThresholdXHigh = MIN(x + 100, 2048);
+	config.wakeupThresholdXLow = MAX(x - 100, -2048);
+
+	config.wakeupThresholdYHigh = MIN(y + 100, 2048);
+	config.wakeupThresholdYLow = MAX(y - 100, -2048);
+
+	config.wakeupThresholdZHigh = MIN(z + 100, 2048);
+	config.wakeupThresholdZLow = MAX(z - 100, -2048);
+
+	tStatus = TLI493D_SetConfiguration(dev, &config);
+	if (tStatus) {
+		return tStatus;
+	}
+
+	return TLI493D_Status_Ok;
+}
+
+int main(void) {
+	TLI493D_Status tStatus;
+	TLI493D_Device tli;
+	TLI493D_Configuration config;
+
+	TLI493D_GetDefaultConfiguration(&config);
+	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// TODO: handle error code in tStatus
+
+	tStatus = updateMagneticThresholds(&tli);
+	// TODO: handle error code in tStatus
+
+	// TODO: configure and enable GPIO falling edge interrupt here
+
+	while (1) {
+		if (is_interrupt_triggered) {
+			is_interrupt_triggered = 0;
+
+			float proximity;
+			tStatus = TLI493D_GetProximity(&tli, &proximity);
+			// TODO: handle error code in tStatus
+			
+			tStatus = updateMagneticThresholds(&tli);
+			// TODO: handle error code in tStatus
+
+			printf("Proximity=%.3f\r\n", proximity);
+		} else {
+			__WFI();
+		}
+	}
+}
+```
+
