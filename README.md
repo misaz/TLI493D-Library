@@ -29,6 +29,33 @@ int main(void) {
 	// handle error code in tStatus
 
 	while (1) {
+		float x, y, z, t;
+		tStatus = TLI493D_GetData(&tli, &x, &y, &z, &t);
+		// handle error code in tStatus
+
+		printf("X=%.3f mT\t Y=%.3f mT\t Z=%.3f mT\t T=%.3f mT\r\n", x, y, z, t);
+	}
+}
+```
+
+## RAW (Integer) Data
+
+In previous example values from sensor was converted to mT unit by library. If you want to receive original unprocessed data (and, for example, process them yourself) you can use functions with Raw in name. In case of simple example replace `TLI493D_GetData` by `TLI493D_GetDataRaw` function call and remember to adjust data types from `float` to `int16_t`.
+
+```
+#include "TLI493D.h"
+#include <stdio.h>
+
+int main(void) {
+	TLI493D_Status tStatus;
+	TLI493D_Device tli;
+	TLI493D_Configuration config;
+
+	TLI493D_GetDefaultConfiguration(&config);
+	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// handle error code in tStatus
+
+	while (1) {
 		int16_t x, y, z, t;
 		tStatus = TLI493D_GetDataRaw(&tli, &x, &y, &z, &t);
 		// handle error code in tStatus
@@ -38,8 +65,9 @@ int main(void) {
 }
 ```
 
+
 ## Multiple sensors
-Basicaly exmaples is almost same as in case in previous case. You need to allocate `TLI493D_Device` for every device and call `TLI493D_Init` (with different `TLI493D_I2C_7BIT_ADDRESS_Ax` I2C address constant) for every device. Config structure you can reuse. Library do not use it after initialization call, so you can dealocate it or change it and use for other sensor.
+Basicaly exmaples is almost same as in case in previous case. You need to allocate `TLI493D_Device` for every device and call `TLI493D_Init` (with different `TLI493D_I2C_7BIT_ADDRESS_Ax` I2C address constant) for every device. Config structure you can reuse. Library do not use it after initialization call, so you can dealocate it or change it and use for other sensor. You can of course use both RAW and mT values independently.
 
 ```
 #include "TLI493D.h"
