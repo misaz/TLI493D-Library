@@ -195,6 +195,8 @@ int main(void) {
 ```
 ## Wakeup
 
+Wake up feature of the TLI493D chip allows suppressing interrupt pulses on ADC completion when the value is within configured range (which is specified by 6 trehsholds: min and max threshold for X, Y, and Z channel). This feature allow implement wake up mechanism for low-power microcontroller. Microcontroller will wake up only when the value drift from specified range. In most usefull setup is range adaptive and after every event it is readjusted. This mode of operation is highlighted in Infineon document [Usermanual TLI493D-W2BW](https://www.infineon.com/dgdl/Infineon-TLI_493D-W2BW-UserManual-v01_10-EN.pdf?fileId=5546d46273a5366f0173be229e1b1512) in Figure 15 on page 27. Following code show implementation of such mode of operation.
+
 ```
 #include "TLI493D.h"
 
