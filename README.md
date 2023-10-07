@@ -151,3 +151,45 @@ int main(void) {
 	}
 }
 ```
+
+## Interrupt
+By default device generates interrupt on completing all requested ADC measurements which in default configuration happens periodicaly based on configured update rate. Following example shows proximity, but not continously, instead it waits for interrupt pulse. For demenstration it also lowers update rate to 3 Hz. Platform specific interrupt configuration you need to provide manually and library do not manage it. You do not need to call anything for handling interrupt, just process it in your own way.
+
+```
+#include "TLI493D.h"
+#include <stdio.h>
+
+int is_interrupt_triggered = 0;
+
+void interrupt_handler() {
+	is_interrupt_triggered = 1;
+}
+
+int main(void) {
+	TLI493D_Status tStatus;
+	TLI493D_Device tli;
+	TLI493D_Configuration config;
+
+	TLI493D_GetDefaultConfiguration(&config);
+	config.updateRate = TLI493D_UpdateRate_3Hz;
+
+	tStatus = TLI493D_Init(&tli, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// handle error code in tStatus
+
+	// configure and enable GPIO falling edge interrupt here
+
+	while (1) {
+		if (is_interrupt_triggered) {
+			is_interrupt_triggered = 0;
+
+			float proximity;
+			tStatus = TLI493D_GetProximity(&tli, &proximity);
+			// handle error code in tStatus
+
+			printf("Proximity=%.3f\r\n", proximity);
+		} else {
+			__WFI();
+		}
+	}
+}
+```
