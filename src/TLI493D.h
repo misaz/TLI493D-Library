@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 #ifndef TLI493D_H_
 #define TLI493D_H_
 

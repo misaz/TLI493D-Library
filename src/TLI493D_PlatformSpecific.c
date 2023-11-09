@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 #include "TLI493D.h"
 #include "TLI493D_PlatformSpecific.h"
 
