@@ -9,13 +9,13 @@ Library was originally developed as part of [Hackster Connect things with code! 
 ## Features
 - Written in C. Can be used in both C and C++ projects.
 - Minimal RAM usage. No dynamic memory allocations.
-- Library core depends on stdint.h (for uint8_t, uint16_t, int16_t and uint32_t types), stddef- (for size_t type) and math.h if geniometric computations are needed.
+- Library core depends on stdint.h (for uint8_t, uint16_t, int16_t and uint32_t types), stddef (for size_t type) and math.h if geniometric computations are needed.
 - Platform specific ports depends on vendor SDK (see section Supported platfroms and porting below).
 - Support for multiple deveices on I2C Bus
 - Support for getting data from sensor and convert them to mT for all 3 directions
 - Support for getting data from sensor in RAW format for all 3 directions
 - Support for computing angle and proximity based on measured data
-- Support for setting thresholds for genreting interrupts
+- Support for setting thresholds for generating interrupts
 - Support for using both one byte and two byte read modes
 - Support for disabling unused channels
 - Support for triggering conversion when executing I2C transactions
@@ -39,8 +39,8 @@ Currently is library ported to following platforms:
 1. Add `#include "TLI493D.h"` at the begining of your source code file.
 1. Allocate `TLI493D_Device` structure. It must be live for whole time when device is used.
 1. Allocate `TLI493D_Configuration` structure and fill its fields or use `TLI493D_GetDefaultConfiguration` for loading defaults to this structure.
-1. Call `TLI493D_Init()` function at the begining of your program. Pass pointer to previously allocated device structure. For specifing use one `TLI493D_I2C_7BIT_ADDRESS_Ax` constant when x at the end is the last number from part number, for example `TLI493D_I2C_7BIT_ADDRESS_A0`. At last pass pointer to previously allocated and filled configuration structure.
-1. Use functions starting with `TLI493D_` as needed.
+1. Call `TLI493D_Init()` function at the begining of your program. Pass pointer to previously allocated device structure. For specifing use one `TLI493D_I2C_7BIT_ADDRESS_Ax` constant when x at the end is the last number from part number, for example `TLI493D_I2C_7BIT_ADDRESS_A0`. At last, pass pointer to previously allocated and filled configuration structure.
+1. Use functions starting with `TLI493D_` prefix as needed.
 
 ## Functions
 Library contains following functions (you can find this listing in `TLI493D.h` file):
@@ -137,7 +137,7 @@ int main(void) {
 
 
 ### Multiple sensors
-Basicaly exmaples is almost same as in case in previous case. You need to allocate `TLI493D_Device` for every device and call `TLI493D_Init` (with different `TLI493D_I2C_7BIT_ADDRESS_Ax` I2C address constant) for every device. Config structure you can reuse. Library do not use it after initialization call, so you can dealocate it or change it and use for other sensor. You can of course use both RAW and mT values independently.
+Basicaly examples is almost same as in case in previous case. You need to allocate `TLI493D_Device` for every device and call `TLI493D_Init` (with different `TLI493D_I2C_7BIT_ADDRESS_Ax` I2C address constant) for every device. Config structure you can reuse. Library do not use it after initialization call, so you can dealocate it or change it and use for other sensor. You can of course use both RAW and mT values independently.
 
 ```
 #include "TLI493D.h"
@@ -149,7 +149,10 @@ int main(void) {
 	TLI493D_Configuration config;
 
 	TLI493D_GetDefaultConfiguration(&config);
+
 	tStatus = TLI493D_Init(&tli1, TLI493D_I2C_7BIT_ADDRESS_A0, &config);
+	// TODO: handle error code in tStatus
+
 	tStatus = TLI493D_Init(&tli2, TLI493D_I2C_7BIT_ADDRESS_A1, &config);
 	// TODO: handle error code in tStatus
 
@@ -223,7 +226,7 @@ int main(void) {
 ```
 
 ### Interrupt
-By default device generates interrupt on completing all requested ADC measurements which in default configuration happens periodicaly based on configured update rate. Following example shows proximity, but not continously, instead it waits for interrupt pulse. For demenstration it also lowers update rate to 3 Hz. Platform specific interrupt configuration you need to provide manually and library do not manage it. You do not need to call anything for handling interrupt, just process it in your own way.
+By default, device generates interrupt on completing all requested ADC measurements which happens periodicaly based on configured update rate. Following example shows proximity, but do not read it continously, instead it waits for interrupt pulse. For demenstration it also lowers update rate to 3 Hz. Platform specific interrupt configuration you need to provide manually and library do not manage it. You do not need to call anything for handling interrupt in the interrupt handler, just process it in your own way (example just updates flag).
 
 ```
 #include "TLI493D.h"
